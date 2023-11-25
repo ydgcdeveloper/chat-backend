@@ -30,7 +30,6 @@ export class UserService {
   }
 
   async findOneByUsername(username: string): Promise<User | undefined> {
-    console.log('username', username);
     return this.prisma.user.findUnique({ where: { username } });
   }
 

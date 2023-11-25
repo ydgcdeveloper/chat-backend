@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from 'src/decorators/decorators';
+import * as cookie from 'cookie';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -45,7 +46,10 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    // const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    const cookies = cookie.parse(request.headers.cookie || '');
+    const authToken = cookies['_auth'];
+    const authType = cookies['_auth_type'];
+    return authType === 'Bearer' ? authToken : undefined;
   }
 }

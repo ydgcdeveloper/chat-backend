@@ -8,9 +8,54 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String?  @unique
-  name     String?
-  username String  @unique
-  password String
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  password     String
+  email        String?       @unique
+  firstName    String?
+  lastName     String?
+  profileImage String?
+  status       String?
+  bio          String?
+  phoneNumber  String?
+  location     String?
+  dateOfBirth  String?
+  joinedDate   String?
+  channels     Channel[] // Users can be part of multiple channels
+  messages     ChatMessage[]
+  Chat         Chat?         @relation(fields: [chatId], references: [id])
+  chatId       Int?
+}
+
+model ChatMessage {
+  id            Int      @id @default(autoincrement())
+  text          String?
+  sender        String? // 'user' | 'bot' | 'system'
+  senderId      Int
+  timestamp     Float
+  status        String? // 'sent' | 'delivered' | 'read';
+  attachment    Json
+  reactions     Json
+  forwardedFrom Int // Sender ID if the message is forwarded
+  replyTo       Json
+  chat          Chat?    @relation(fields: [chatId], references: [id])
+  chatId        Int?
+  channel       Channel? @relation(fields: [channelId], references: [id])
+  channelId     Int?
+  User          User?    @relation(fields: [userId], references: [id])
+  userId        Int?
+}
+
+model Channel {
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String?
+  participants User[] // Users who are part of the channel
+  messages     ChatMessage[]
+}
+
+model Chat {
+  id           Int           @id @default(autoincrement())
+  participants User[] // Users who are part of the chat
+  messages     ChatMessage[]
 }
