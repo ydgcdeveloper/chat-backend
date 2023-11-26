@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { PrismaService } from 'src/services/prisma.service';
 
 @Injectable()
 export class ChannelService {
+  constructor(private prismaService: PrismaService) {}
   create(createChannelDto: CreateChannelDto) {
-    return 'This action adds a new channel';
+    return this.prismaService.channel.create({
+      data: createChannelDto,
+    });
   }
 
   findAll() {

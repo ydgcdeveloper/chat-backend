@@ -6,13 +6,14 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Public } from 'src/decorators/decorators';
+import { Public, Roles } from 'src/decorators/decorators';
+import { Role, User } from '@prisma/client';
+import { CurrentUser } from 'src/decorators/current-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -20,15 +21,20 @@ export class UserController {
 
   @Post()
   @Public()
-  @UseGuards(AuthGuard)
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
-  @UseGuards(AuthGuard)
-  findAll() {
+  @Roles(Role.USER)
+  findAll(@CurrentUser() currentUser: User) {
+    console.log(currentUser);
     return this.userService.findAll();
+  }
+
+  @Get('getAvailableUsers')
+  getAvailableUsers(@CurrentUser() currentUser: User) {
+    return this.userService.findAvailableUsers(currentUser);
   }
 
   @Get(':id')

@@ -21,6 +21,17 @@ export class UserService {
     return this.prisma.user.findMany();
   }
 
+  async findAvailableUsers(currentUser: any): Promise<User[]> {
+    const currentUserId = currentUser.sub;
+    return this.prisma.user.findMany({
+      where: {
+        id: {
+          not: currentUserId,
+        },
+      },
+    });
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
@@ -39,5 +50,18 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async findById(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      return;
+    }
+    const { password, ...result } = user;
+    return result;
   }
 }

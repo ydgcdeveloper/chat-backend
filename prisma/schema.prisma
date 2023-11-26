@@ -9,6 +9,9 @@ datasource db {
 
 model User {
   id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  role         Role          @default(USER)
   username     String        @unique
   password     String
   email        String?       @unique
@@ -21,14 +24,15 @@ model User {
   location     String?
   dateOfBirth  String?
   joinedDate   String?
-  channels     Channel[] // Users can be part of multiple channels
   messages     ChatMessage[]
-  Chat         Chat?         @relation(fields: [chatId], references: [id])
+  chat         Chat?         @relation(fields: [chatId], references: [id])
   chatId       Int?
 }
 
 model ChatMessage {
   id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   text          String?
   sender        String? // 'user' | 'bot' | 'system'
   senderId      Int
@@ -40,22 +44,31 @@ model ChatMessage {
   replyTo       Json
   chat          Chat?    @relation(fields: [chatId], references: [id])
   chatId        Int?
-  channel       Channel? @relation(fields: [channelId], references: [id])
-  channelId     Int?
-  User          User?    @relation(fields: [userId], references: [id])
+  user          User?    @relation(fields: [userId], references: [id])
   userId        Int?
 }
 
 model Channel {
-  id           Int           @id @default(autoincrement())
-  name         String
-  description  String?
-  participants User[] // Users who are part of the channel
-  messages     ChatMessage[]
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  chat      Chat?
 }
 
 model Chat {
   id           Int           @id @default(autoincrement())
-  participants User[] // Users who are part of the chat
-  messages     ChatMessage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  description  String?
+  type         String? // personal | group
+  participants User[]
+  channel      Channel       @relation(fields: [channelId], references: [id])
+  channelId    Int           @unique
+  chatMessage  ChatMessage[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }

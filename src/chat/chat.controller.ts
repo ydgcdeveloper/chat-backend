@@ -10,6 +10,7 @@ import {
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { createChatGroupDto } from './dto/create-chat-group.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -18,6 +19,11 @@ export class ChatController {
   @Post()
   create(@Body() createChatDto: CreateChatDto) {
     return this.chatService.create(createChatDto);
+  }
+
+  @Post('createChat')
+  createChat(@Body() createChatDto: createChatGroupDto) {
+    return this.chatService.createChat(createChatDto);
   }
 
   @Get()

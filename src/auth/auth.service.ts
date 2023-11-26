@@ -16,10 +16,21 @@ export class AuthService {
     if (!valid) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: user.id, username: user.username };
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      firstName: user.firstName,
+    };
     return {
       access_token: await this.jwtService.signAsync(payload),
       username: user.username,
     };
+  }
+
+  async whoAmI(tokenBearer) {
+    const decoded = JSON.parse(
+      JSON.stringify(this.jwtService.decode(tokenBearer)) as string,
+    );
+    return await this.usersService.findById(decoded.sub);
   }
 }
