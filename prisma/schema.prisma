@@ -8,44 +8,49 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  role         Role          @default(USER)
-  username     String        @unique
-  password     String
-  email        String?       @unique
-  firstName    String?
-  lastName     String?
-  profileImage String?
-  status       String?
-  bio          String?
-  phoneNumber  String?
-  location     String?
-  dateOfBirth  String?
-  joinedDate   String?
-  messages     ChatMessage[]
-  chat         Chat?         @relation(fields: [chatId], references: [id])
-  chatId       Int?
+  id             Int           @id @default(autoincrement())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  role           Role          @default(USER)
+  username       String        @unique
+  password       String
+  email          String?       @unique
+  firstName      String?
+  lastName       String?
+  profileImage   String?
+  status         String?
+  bio            String?
+  phoneNumber    String?
+  location       String?
+  dateOfBirth    String?
+  joinedDate     String?
+  messages       ChatMessage[]
+  chat           Chat?         @relation(fields: [chatId], references: [id])
+  chatId         Int?
+  lastConnection DateTime?
+  sender         ChatMessage[] @relation("sender_relation")
+  receiver       ChatMessage[] @relation("receiver_relation")
 }
 
 model ChatMessage {
   id            Int      @id @default(autoincrement())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  text          String?
-  sender        String? // 'user' | 'bot' | 'system'
+  text          String
+  sender        User     @relation("sender_relation", fields: [senderId], references: [id])
   senderId      Int
-  timestamp     Float
+  receiver      User     @relation("receiver_relation", fields: [receiverId], references: [id])
+  receiverId    Int
   status        String? // 'sent' | 'delivered' | 'read';
-  attachment    Json
-  reactions     Json
-  forwardedFrom Int // Sender ID if the message is forwarded
-  replyTo       Json
+  attachment    Json?
+  reactions     Json?
+  forwardedFrom Int? // Sender ID if the message is forwarded
+  replyTo       Json?
   chat          Chat?    @relation(fields: [chatId], references: [id])
   chatId        Int?
   user          User?    @relation(fields: [userId], references: [id])
   userId        Int?
+  lastMessage   Chat?    @relation("lastMessage_relation")
 }
 
 model Channel {
@@ -57,15 +62,18 @@ model Channel {
 }
 
 model Chat {
-  id           Int           @id @default(autoincrement())
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  description  String?
-  type         String? // personal | group
-  participants User[]
-  channel      Channel       @relation(fields: [channelId], references: [id])
-  channelId    Int           @unique
-  chatMessage  ChatMessage[]
+  id             Int           @id @default(autoincrement())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  description    String?
+  type           String? // personal | group
+  participants   User[]
+  unreadMessages Int           @default(0)
+  lastMessage    ChatMessage?  @relation("lastMessage_relation", fields: [lastMessageId], references: [id])
+  lastMessageId  Int?          @unique
+  channel        Channel       @relation(fields: [channelId], references: [id])
+  channelId      Int           @unique
+  chatMessage    ChatMessage[]
 }
 
 enum Role {

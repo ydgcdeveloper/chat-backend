@@ -21,13 +21,35 @@ export class UserService {
     return this.prisma.user.findMany();
   }
 
-  async findAvailableUsers(currentUser: any): Promise<User[]> {
+  async findAvailableUsers(currentUser: any): Promise<User | any[]> {
     const currentUserId = currentUser.sub;
     return this.prisma.user.findMany({
       where: {
         id: {
           not: currentUserId,
         },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        profileImage: true,
+        status: true,
+        bio: true,
+        phoneNumber: true,
+        location: true,
+        dateOfBirth: true,
+        joinedDate: true,
+        // Exclude the password field
+        password: false, // Prisma automatically excludes this field from the query
+        messages: true,
+        chat: true,
+        chatId: true,
       },
     });
   }

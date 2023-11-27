@@ -32,9 +32,14 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get('getAvailableUsers')
+  @Get('available')
   getAvailableUsers(@CurrentUser() currentUser: User) {
     return this.userService.findAvailableUsers(currentUser);
+  }
+
+  @Get('user_loggued')
+  getUserLoggued(@CurrentUser() currentUser) {
+    return this.userService.findById(currentUser.sub);
   }
 
   @Get(':id')

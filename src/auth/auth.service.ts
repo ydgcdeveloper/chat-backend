@@ -21,9 +21,10 @@ export class AuthService {
       username: user.username,
       firstName: user.firstName,
     };
+    const { password, createdAt, updatedAt, joinedDate, ...result } = user;
     return {
       access_token: await this.jwtService.signAsync(payload),
-      username: user.username,
+      user: result,
     };
   }
 

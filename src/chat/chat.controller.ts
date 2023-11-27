@@ -11,6 +11,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { createChatGroupDto } from './dto/create-chat-group.dto';
+import { CurrentUser } from 'src/decorators/current-user.decorator';
 
 @Controller('chat')
 export class ChatController {
@@ -29,6 +30,11 @@ export class ChatController {
   @Get()
   findAll() {
     return this.chatService.findAll();
+  }
+
+  @Get('user_chats')
+  getChatByUser(@CurrentUser() currentUser) {
+    return this.chatService.getChatByUser(currentUser.sub);
   }
 
   @Get(':id')

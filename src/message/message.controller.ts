@@ -15,7 +15,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Post()
+  @Post('new')
   create(@Body() createMessageDto: CreateMessageDto) {
     return this.messageService.create(createMessageDto);
   }

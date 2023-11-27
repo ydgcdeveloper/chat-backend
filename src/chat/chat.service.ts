@@ -3,6 +3,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/services/prisma.service';
 import { createChatGroupDto } from './dto/create-chat-group.dto';
+import { Chat } from '@prisma/client';
 
 @Injectable()
 export class ChatService {
@@ -22,6 +23,23 @@ export class ChatService {
 
   findAll() {
     return `This action returns all chat`;
+  }
+
+  async getChatByUser(id: number): Promise<Chat[]> {
+    return this.prismaService.chat.findMany({
+      where: {
+        participants: {
+          some: {
+            id,
+          },
+        },
+      },
+      include: {
+        participants: {},
+        chatMessage: {},
+        lastMessage: {},
+      },
+    });
   }
 
   findOne(id: number) {
